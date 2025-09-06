@@ -17,21 +17,21 @@ public class ArffReader {
         log.info("reading data ...");
         var bf = new BufferedReader(new FileReader(file));
         var lines = bf.lines().toList();
-        var dataset = new Dataset(lines.stream().filter(s -> s.contains("@relation")).collect(Collectors.toList()).toString());
+        var dataset = new Dataset(lines.stream().filter(s -> s.contains("@relation")).toList().toString());
         var attributes = new ArrayList<String>();
         lines.stream().filter(line -> line.contains("@attribute")).forEach(line -> {
-               attributes.add(line.split("@attribute")[1].trim());
+               attributes.add(line.split("@attribute")[1].split(" ")[1].trim());
         });
         var data = lines.stream().filter(line -> {
-            return !line.contains("@attribute") || !line.contains("@relation") || line.contains(",");
+            return !line.contains("@attribute") && !line.contains("@relation") && line.contains(",");
         });
         int previous_size = attributes.size();
-        attributes.removeIf( string -> string.contains("decision_o") || string.contains("decision"));
         data.forEach(datum -> {
             dataset.load(attributes,datum.split(","));
         });
 //        for(String attribute : attributes)
 //            log.info("{}" , attribute);
+        attributes.removeIf( string -> string.contains("decision"));
         log.info("attributes {} reduced to {} by removing decision decision_o",previous_size,attributes.size());
         log.info("data loading complete");
         dataset.setAttributes(attributes);

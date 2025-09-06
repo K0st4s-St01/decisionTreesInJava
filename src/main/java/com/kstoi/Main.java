@@ -60,15 +60,16 @@ public class Main {
             double truePositives=0,trueNegatives=0,falsePositives=0,falseNegatives=0;
             for (Dataset.Line line : testDataset.getData()){
                 String prediction = tree.predict(node,line);
-                log.info("line is labeled as {} -> predicted {}",line.get("match {0,1}"),prediction);
+                System.out.println(line);
+                log.info("line is labeled as {} -> predicted {}",line.get("match}"),prediction);
                 if(prediction!=null)
-                    if(Objects.equals(line.get("match {0,1}"), prediction) && prediction.equals("1")){
+                    if(Objects.equals(line.get("match"), prediction) && prediction.equals("1")){
                        truePositives++;
-                    } else if (Objects.equals(line.get("match {0,1}"), prediction) && prediction.equals("0")) {
+                    } else if (Objects.equals(line.get("match"), prediction) && prediction.equals("0")) {
                         trueNegatives++;
-                    }else if(!Objects.equals(line.get("match {0,1}"), prediction) && prediction.equals("1")){
+                    }else if(!Objects.equals(line.get("match"), prediction) && prediction.equals("1")){
                         falsePositives++;
-                    }else if (!Objects.equals(line.get("match {0,1}"), prediction) && prediction.equals("1")) {
+                    }else if (!Objects.equals(line.get("match"), prediction) && prediction.equals("1")) {
                         falseNegatives++;
                     }
             }

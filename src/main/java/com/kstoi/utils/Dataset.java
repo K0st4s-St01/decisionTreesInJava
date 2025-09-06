@@ -64,12 +64,16 @@ public class Dataset {
             for (int i = 0; i < attributes.size(); i++) {
                 var attribute = attributes.get(i) ;
                 var value =  values[i];
-                line.put(attribute,value);
-                sb.append(attribute);
-                sb.append(" = ");
-                sb.append(value);
-                if (i != attributes.size()-1){
-                    sb.append(" , ");
+                if(!attribute.equals("decision") && !attribute.equals("decision_o")) {
+
+                    line.put(attribute, value.equals("?")?"-1":value);
+                    log.info("{} -->  {}", attribute, value);
+                    sb.append(attribute);
+                    sb.append(" = ");
+                    sb.append(value);
+                    if (i != attributes.size() - 1) {
+                        sb.append(" , ");
+                    }
                 }
             }
             log.info(sb.toString());

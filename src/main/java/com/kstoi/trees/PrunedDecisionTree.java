@@ -77,7 +77,7 @@ public class PrunedDecisionTree implements DecTree<com.kstoi.trees.PrunedDecisio
 
     private double[] bestThresholdNumeric(List<Dataset.Line> data, String attribute, String target) {
         List<Dataset.Line> sorted = new ArrayList<>(data);
-        sorted.sort(Comparator.comparing(m -> Double.parseDouble(m.get(attribute))));
+        sorted.sort(Comparator.comparing(m ->  Double.parseDouble(m.get(attribute))));
 
         double bestGain = 0d;
         double bestThresh = 0d;
@@ -206,7 +206,7 @@ public class PrunedDecisionTree implements DecTree<com.kstoi.trees.PrunedDecisio
         var firstLine = dataset.getData().get(0);
         for (var attribute : firstLine.getLine().keySet()) {
             try {
-                Double.parseDouble(firstLine.get(attribute));
+                Double.valueOf(firstLine.get(attribute));
                 isNumeric.put(attribute, true);
             } catch (NumberFormatException e) {
                 isNumeric.put(attribute, false);
