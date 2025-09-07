@@ -61,7 +61,7 @@ public class Main {
             for (Dataset.Line line : testDataset.getData()){
                 String prediction = tree.predict(node,line);
                 System.out.println(line);
-                log.info("line is labeled as {} -> predicted {}",line.get("match}"),prediction);
+                log.info("line is labeled as {} -> predicted {}",line.get("match"),prediction);
                 if(prediction!=null)
                     if(Objects.equals(line.get("match"), prediction) && prediction.equals("1")){
                        truePositives++;
