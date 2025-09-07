@@ -6,7 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
+import java.util.function.Consumer;
 
 @AllArgsConstructor
 @Slf4j
@@ -235,12 +238,35 @@ public class DecisionTree implements DecTree<DecisionTree.Node> {
     }
 
     @ToString
-    public static class Node {
+    public static class Node implements TreeNode {
         String attribute;
         Double threshold;
         String label;
         boolean isLeaf = false;
         Map<String, Node> children = new HashMap<>();
         Node left = null, right = null;
+        @Override
+        public void forEach(Consumer<Map<String, Object>> consumer,int x,int y,int dx,int dy) {
+            Map<String,Object> map = new HashMap<>();
+            map.put("point",new Point(x+dx,y+dy));
+            map.put("attr",attribute);
+            map.put("label",label);
+            map.put("isLeaf",isLeaf);
+            map.put("parent",new Point(x,y));
+            consumer.accept(map);
+            if (!isLeaf && children!=null && !children.isEmpty()) {
+                int i = 0;
+                int ddx = children.size()/2;
+
+                for (Map.Entry<String, DecisionTree.Node> entry : children.entrySet()) {
+                    String key = entry.getKey();
+                    DecisionTree.Node node = entry.getValue();
+                    if (node != null) {
+                        node.forEach(consumer, x, y, dx + (i-ddx)*250, dy + 100);
+                    }
+                    i++;
+                }
+            }
+        }
     }
 }

@@ -3,18 +3,22 @@ package com.kstoi;
 import com.kstoi.trees.DecTree;
 import com.kstoi.trees.DecisionTree;
 import com.kstoi.trees.PrunedDecisionTree;
+import com.kstoi.trees.TreeNode;
 import com.kstoi.utils.ArffReader;
 import com.kstoi.utils.Dataset;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 public class Main {
@@ -46,7 +50,7 @@ public class Main {
                 log.info("{} -> {}",string,object.toString());
             });
             log.info("***REGULAR***");
-            log.info("3. Decision Tree results");
+            log.info(" Decision Tree results");
             resultNotPrunedHalfDataset.forEach((string,object)->{
                 log.info("{} -> {}",string,object.toString());
             });
@@ -55,9 +59,16 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
-    public static <Node> Map<String,Object> testTree(DecTree<Node> tree, Dataset testDataset) {
+    public static <Node extends TreeNode> Map<String,Object> testTree(DecTree<Node> tree, Dataset testDataset) {
             var node = tree.build();
-            double truePositives=0,trueNegatives=0,falsePositives=0,falseNegatives=0;
+
+        try {
+            getTreeImage(node,tree.toString()+"_data_"+testDataset.getData().size());
+        } catch (IOException e) {
+           e.printStackTrace();
+        }
+
+        double truePositives=0,trueNegatives=0,falsePositives=0,falseNegatives=0;
             for (Dataset.Line line : testDataset.getData()){
                 String prediction = tree.predict(node,line);
                 System.out.println(line);
@@ -100,4 +111,26 @@ public class Main {
         return tn /(tn+fp);
     }
 
+    public static void getTreeImage(TreeNode node,String filename) throws IOException {
+        Image image = new BufferedImage(17000,2160,BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = (Graphics2D) image.getGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0,0,17000,2160);
+        g.setFont(new Font("Arial Black",Font.PLAIN,12));
+        node.forEach(treeNode->{
+            g.setColor(Color.BLACK);
+            var point = (Point)treeNode.get("point");
+            var previous = (Point) treeNode.get("parent");
+            if (previous != null){
+                g.drawLine(previous.x, previous.y, point.x, point.y);
+            }
+            if((boolean) treeNode.get("isLeaf")){
+                g.drawString((String) treeNode.get("label"),point.x,point.y);
+            }else{
+                g.drawString(((String) treeNode.get("attr")), point.x, point.y);
+            }
+        },8500,100,0,0);
+        g.dispose();
+        ImageIO.write((RenderedImage) image,"png",new File("src/main/resources/"+filename+".png"));
+    }
 }
